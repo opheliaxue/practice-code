@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>  
+<body ng-app="myApp">
+
+
+  <form name="myForm" ng-controller="myCtrl">
+    <p>Input should be only number and Alphabet</p>
+    Username:<input name="myInput" ng-model="myInput" list="usernames" required my-directive>
+    <datalist id="usernames" ng-show="!!opts && opts.length > 0 ">
+      <option ng-repeat="opt in opts">{{opt.name}}</option>
+    </datalist>
+    <span style="color:red" ng-show="myForm.myInput.$dirty && myForm.myInput.$invalid">Input should be only number and Alphabet</span>
+    <div>
+      <button ng-disabled="!myForm.myInput.$valid">Submit</button>
+    </div>
+  </form>
+
+  
+<script>
+    var app = angular.module('myApp', []);
+    var NAME_REGEXP = /^[a-zA-Z0-9]*$/;
+    //autocomplete fake json source
+    app.controller('myCtrl',['$scope', '$http', function($scope, $http){
+
+        }])
+        // directive for validation
+        .directive('myDirective', ['$http',function($http) {
+            return {
+                require: 'ngModel',
+                link: function($scope, element, attr, mCtrl) {
+                    function myValidation(value) {
+                        if (/^[a-zA-Z0-9]*$/.test(value)) {
+                            mCtrl.$setValidity('charE', true);
+                        } else {
+                            mCtrl.$setValidity('charE', false);
+                        }
+                    return value;
+                    }
+                    $http.get('/data.json').success(function(data){
+                        $scope.opts = data;
+                    });
+            mCtrl.$parsers.push(myValidation);
+        }
+    };
+}]);
+</script>
+
+</body>
+</html>
